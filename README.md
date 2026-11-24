@@ -117,6 +117,60 @@ against the original version.
 Pairwise Wasserstein distances between the rows of `X` and `centroids`. It can be used
 on its own, for example for silhouette scores or to choose `n_clusters`.
 
+## What the default mode can and cannot separate
+
+The tests below use synthetic data with 30 histograms per group, 50 bins over [−8, 8], and the default
+settings (`bin_centers=None`). Accuracy is the share of histograms assigned to the correct group;
+with two groups, 50% is chance level.
+
+### Unimodal vs. multimodal
+
+Because bin location is ignored, a multimodal histogram is compared by its bar heights, not by where
+its peaks are. It is separated from a unimodal one unless its peaks have the same height as the single
+peak (mass proportional to width) **and** their widths sum to the single peak's width.
+
+| Unimodal | Multimodal | Accuracy |
+|---|---|---|
+| σ = 0.5 | two σ = 0.5 peaks, equal mass | 100% |
+| σ = 1 | two σ = 1 peaks, equal mass | 100% |
+| σ = 1 | σ = 0.2 and σ = 0.8 peaks, equal mass | 100% |
+| σ = 1 | two σ = 0.5 peaks, equal mass | 50% |
+| σ = 2 | two σ = 1 peaks, equal mass | 50% |
+| σ = 1 | σ = 0.2 and σ = 0.8 peaks, mass 20 / 80 | 50% |
+
+In the three failing cases, the peak widths add up to the unimodal width and every peak reaches the
+unimodal peak height. The histograms then contain the same set of bar heights, so they are
+indistinguishable in this mode.
+
+### Skewness and tail behaviour
+
+Each shape is standardised to mean 0 and standard deviation 1 and compared with the Gaussian that
+resembles it most in this mode (the hardest case). Columns give the number of samples per histogram.
+
+| Shape | 100 | 300 | 1,000 | 5,000 |
+|---|---|---|---|---|
+| Exponential (strong skew) | 91% | 98% | 100% | 100% |
+| Laplace (sharp peak, fat tails) | 87% | 99% | 100% | 100% |
+| Student-t ν=5 | 56% | 75% | 100% | 100% |
+| Skew-normal α=5 (moderate skew) | 54% | 62% | 63% | 99% |
+| Gamma k=4 (skewness ≈ 1) | 54% | 56% | 72% | 99% |
+
+Against a Gaussian with the same standard deviation, all of these shapes are separated (100% at
+2,000 samples per histogram).
+
+### Summary
+
+- **Separated well:** differences in peakedness and spread, strong asymmetry, and multimodality where
+  the peak heights differ from the unimodal peak.
+- **Needs large samples:** moderate skewness (skewness ≲ 1) looks like a slightly narrower Gaussian
+  and is separated reliably only with several thousand samples per histogram.
+- **Weighted weakly:** tail behaviour. Bins in the tails have heights close to zero and contribute little
+  to the distance (3–31% in these tests), so tail differences matter mainly when they come with a
+  sharper or flatter peak.
+- **Not separated:** multimodal histograms whose peaks match the unimodal peak height and whose widths
+  sum to the unimodal width.
+  
+
 ## Notes and limitations
 
 - All histograms must share the same bins.
