@@ -1,13 +1,10 @@
-# so_clustering
+# so_clustering v1.0
 
-**Shape-oriented clustering of distributions.**
+**Shape-oriented clustering of distribution histograms**
 
 `so_clustering` groups histograms (or any binned distributions) by the *shape* of
-the distribution rather than by bin-by-bin differences. It is a k-means-style
-algorithm in which the assignment step uses the Earth Mover's distance
-(1-D Wasserstein distance), so two distributions that are similar in form but
-slightly shifted are treated as close, and distributions with different modality
-or skewness are kept apart.
+the distribution and is less dominated by the location of bins. Two distributions that are similar in form but
+slightly translated (shifted) or permutated (re-ordered) are treated as close; and distributions with different modality, skewness, or tail behaviours are kept apart.
 
 ![Example: synthetic Gaussian, right-skewed and bimodal histograms separated into three clusters](examples/synthetic_clusters.png)
 
@@ -17,14 +14,17 @@ Given `n` histograms with a common set of bins (an array of shape `(n_samples, n
 
 1. **Initialise** `k` centroids with k-means++ (`sklearn.cluster.KMeans`).
 2. **Assign** each histogram to the centroid with the smallest Wasserstein distance.
-3. **Update** each centroid as the mean histogram of its members. If a cluster is empty, it keeps its previous centroid.
-4. **Repeat** steps 2–3 until the largest centroid shift is below `tol` or `max_iter` is reached.
+3. **Update** each centroid as the mean histogram of its members. 
+4. **Iterate** steps 2–3 until the largest centroid shift is below `tol` (convergence) or `max_iter` is reached.
 
-Using the mean as the centroid keeps the update cheap and makes every centroid a
-valid histogram. The Wasserstein assignment is what makes the clustering sensitive
-to shape. Distances are computed in closed form and vectorised over all
+Taking the frequency profile instead of the full histogram reduces the weight of bin location.
+Assigning frequency profiles with Wasserstein distance makes the clustering sensitive to shape. 
+Using the mean as the centroid preserves the common shape of histograms in a cluster. 
+Convergence can be set mannually (`tol`).
+
+<!-- Distances are computed in closed form and vectorised over all
 sample–centroid pairs. The results match `scipy.stats.wasserstein_distance`
-to floating-point precision.
+to floating-point precision. -->
 
 ## Installation
 
