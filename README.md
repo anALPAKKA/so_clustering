@@ -36,74 +36,15 @@ Convergence can be set mannually (`tol`).
 If you want to give more weight to the tail behaviour in clustering, normalise each histogram profile and take its square root before 
 clustering, e.g. `model.fit(np.sqrt(H / H.sum(axis=1, keepdims=True)))`; 
 centroids can be squared and renormalised to plot them as histograms again.
-This clustering is an empirical one, which means the convergence, sample size, 
-cluster number have to be adjusted based on the nature of the data and the user's needs.
+
 
 <!-- Distances are computed in closed form and vectorised over all
 sample–centroid pairs. The results match `scipy.stats.wasserstein_distance`
 to floating-point precision. -->
 
 <!--
-## Installation
 
-```bash
-git clone https://github.com/anALPAKKA/so_clustering.git
-cd so_clustering
-pip install .
-```
 
-Requirements: Python ≥ 3.9, NumPy, SciPy and scikit-learn (see `requirements.txt`).
-The example also needs matplotlib.
-
--->
-
-## Quick start
-
-```python
-import numpy as np
-from so_clustering import ShapeOrientedClustering
-
-edges = np.linspace(-4, 6, 51)
-centers = 0.5 * (edges[:-1] + edges[1:])
-
-# H: array of shape (n_samples, n_bins), one histogram per row
-H = np.array([np.histogram(sample, bins=edges, density=True)[0] for sample in samples])
-
-model = ShapeOrientedClustering(n_clusters=3, bin_centers=centers)
-labels = model.fit_predict(H)
-
-model.centroids        # (3, n_bins) mean histogram of each cluster
-model.predict(H_new)   # assign new histograms to the nearest centroid
-model.transform(H_new) # Wasserstein distance to every centroid
-```
-
-<!--
-For a complete example that draws Gaussian, right-skewed and bimodal samples and
-makes the figure above, run:
-
-```bash
-python examples/synthetic_example.py
-```
--->
-
-## Choosing the distance: `bin_centers`
-
-The Wasserstein distance can be applied to a histogram row in two ways, controlled by
-`bin_centers`:
-
-| `bin_centers` | Each row is treated as… | Equivalent SciPy call |
-|---|---|---|
-| array of bin positions (**recommended**) | weights (counts or densities) at those positions | `wasserstein_distance(bin_centers, bin_centers, row, centroid)` |
-| `None` (default) | a set of sample values | `wasserstein_distance(row, centroid)` |
-
-With `bin_centers` given, the distance compares how probability mass is spread
-along the value axis, which is what "distribution shape" usually means. Rows are
-normalised to sum to one, so raw counts and densities both work.
-
-With `bin_centers=None`, the bin heights themselves are compared as samples, so bin
-order does not matter: shuffling the bins of a histogram gives a distance of zero to
-the original. This mode reproduces the original `HybridClustering` implementation exactly
-and is kept so earlier results can be reproduced.
 
 ## API
 
@@ -196,21 +137,17 @@ Against a Gaussian with the same standard deviation, all of these shapes are sep
 ## Notes and limitations
 
 - All histograms must share the same bins.
+- This clustering is an empirical one, which means the convergence, sample size, 
+cluster number have to be adjusted based on the nature of the data and the user's needs.
+
+<!--
 - Results depend on the k-means++ initialisation. Try a few `random_state` values,
   or compare runs, before settling on a solution.
 - Assignment cost is O(n_samples × n_clusters × n_bins) per iteration.
   Memory use scales the same way, because the distance matrix is built in one step.
+-->
 
-## Tests
 
-```bash
-pip install pytest
-pytest
-```
-
-The tests check both distance modes against `scipy.stats.wasserstein_distance`. They also
-check that the package gives identical labels and centroids to the original
-implementation.
 
 ## Citation
 
