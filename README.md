@@ -10,8 +10,10 @@ This is an empirical algorithm intended for histograms computed over the same va
 are similar across samples, such as variations centred around zero.
 **Example:**
 
-<img src="fig_mrd_method_example_201617.png" alt="Shape-oriented clusters of InSAR ground-deformation histograms" width="70%">
-
+<p>
+  <strong>Example:</strong><br>
+  <img src="fig_mrd_method_example_201617.png" alt="Shape-oriented clusters of InSAR ground-deformation histograms" width="70%">
+</p>
 
 *Figure adapted from Liu et al. (in prep.): Distribution-Based Representation of InSAR Permafrost Deformation Preserves Subgrid Variability and Reveals Landscape Patterns, preprint version DOI: 10.22541/essoar.176548356.68541816/v1.*
 
