@@ -42,8 +42,6 @@ centroids can be squared and renormalised to plot them as histograms again.
 sample–centroid pairs. The results match `scipy.stats.wasserstein_distance`
 to floating-point precision. -->
 
-<!--
-
 
 
 ## API
