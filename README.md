@@ -8,8 +8,8 @@ slightly translated (shifted) or permuted (re-ordered) are treated as close; and
 skewness, or tail behaviours are kept apart. 
 This is an empirical algorithm intended for histograms computed over the same value range whose central locations 
 are similar across samples, such as variations centred around zero.
-
 **Example:**
+
 <img src="fig_mrd_method_example_201617.png" alt="Shape-oriented clusters of InSAR ground-deformation histograms" width="70%">
 
 
