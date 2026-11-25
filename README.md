@@ -43,7 +43,7 @@ sample–centroid pairs. The results match `scipy.stats.wasserstein_distance`
 to floating-point precision. -->
 
 
-
+<!-- 
 ## API
 
 ### `ShapeOrientedClustering(n_clusters, max_iter=100, tol=1e-4, bin_centers=None, random_state=42)`
@@ -77,6 +77,9 @@ against the original version.
 
 Pairwise Wasserstein distances between the rows of `X` and `centroids`. It can be used
 on its own, for example for silhouette scores or to choose `n_clusters`.
+
+-->
+
 
 ## What the default mode can and cannot separate
 
