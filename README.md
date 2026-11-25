@@ -4,28 +4,42 @@
 
 `so_clustering` groups histograms (or any binned distributions) by the *shape* of
 the distribution and is less dominated by the location of bins. Two distributions that are similar in form but
-slightly translated (shifted) or permutated (re-ordered) are treated as close; and distributions with different modality, skewness, or tail behaviours are kept apart.
+slightly translated (shifted) or permuted (re-ordered) are treated as close; and distributions with different modality, 
+skewness, or tail behaviours are kept apart. 
+This is an empirical algorithm intended for histograms computed over the same value range whose central locations 
+are similar across samples, such as variations centred around zero.
 
-![Example: synthetic Gaussian, right-skewed and bimodal histograms separated into three clusters](examples/synthetic_clusters.png)
+![Shape-oriented clusters of InSAR ground-deformation histograms](docs/figure_permafrost_clusters.png)
+
+*Figure adapted from Liu et al. (in prep.): [one-sentence caption, e.g. region, sensor, number of clusters].*
 
 ## How it works
 
 Given `n` histograms with a common set of bins (an array of shape `(n_samples, n_bins)`):
-
-1. **Initialise** `k` centroids with k-means++ (`sklearn.cluster.KMeans`).
-2. **Assign** each histogram to the centroid with the smallest Wasserstein distance.
-3. **Update** each centroid as the mean histogram of its members. 
-4. **Iterate** steps 2–3 until the largest centroid shift is below `tol` (convergence) or `max_iter` is reached.
+1. **Profiling.** Each sample (for example, a grid cell) is represented by the vector
+   of its histogram bin heights, all calculated over the same value range (50 bins
+   in the original application). This vector is the *frequency profile*.
+2. **Initialise** `k` centroids with k-means++ (`sklearn.cluster.KMeans`).
+3. **Assign** each histogram to the centroid with the smallest Wasserstein distance.
+   The Wasserstein distance is computed on the profile instead of the raw values.
+4. **Update** each centroid as the mean histogram of its members, i.e. 
+5. **Iterate** steps 3–4 until the largest centroid shift is below `tol` (convergence) or `max_iter` is reached.
 
 Taking the frequency profile instead of the full histogram reduces the weight of bin location.
 Assigning frequency profiles with Wasserstein distance makes the clustering sensitive to shape. 
 Using the mean as the centroid preserves the common shape of histograms in a cluster. 
 Convergence can be set mannually (`tol`).
+If you want to give more weight to the tail behaviour in clustering, normalise each histogram profile and take its square root before 
+clustering, e.g. `model.fit(np.sqrt(H / H.sum(axis=1, keepdims=True)))`; 
+centroids can be squared and renormalised to plot them as histograms again.
+This clustering is an empirical one, which means the convergence, sample size, 
+cluster number have to be adjusted based on the nature of the data and the user's needs.
 
 <!-- Distances are computed in closed form and vectorised over all
 sample–centroid pairs. The results match `scipy.stats.wasserstein_distance`
 to floating-point precision. -->
 
+<!--
 ## Installation
 
 ```bash
@@ -36,6 +50,8 @@ pip install .
 
 Requirements: Python ≥ 3.9, NumPy, SciPy and scikit-learn (see `requirements.txt`).
 The example also needs matplotlib.
+
+-->
 
 ## Quick start
 
@@ -57,12 +73,14 @@ model.predict(H_new)   # assign new histograms to the nearest centroid
 model.transform(H_new) # Wasserstein distance to every centroid
 ```
 
+<!--
 For a complete example that draws Gaussian, right-skewed and bimodal samples and
 makes the figure above, run:
 
 ```bash
 python examples/synthetic_example.py
 ```
+-->
 
 ## Choosing the distance: `bin_centers`
 
