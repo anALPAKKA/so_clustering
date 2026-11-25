@@ -9,7 +9,9 @@ skewness, or tail behaviours are kept apart.
 This is an empirical algorithm intended for histograms computed over the same value range whose central locations 
 are similar across samples, such as variations centred around zero.
 
-![Shape-oriented clusters of InSAR ground-deformation histograms](fig_mrd_method_example_201617.png)
+**Example:**
+<img src="fig_mrd_method_example_201617.png" alt="Shape-oriented clusters of InSAR ground-deformation histograms" width="70%">
+
 
 *Figure adapted from Liu et al. (in prep.): Distribution-Based Representation of InSAR Permafrost Deformation Preserves Subgrid Variability and Reveals Landscape Patterns, preprint version DOI: 10.22541/essoar.176548356.68541816/v1.*
 
